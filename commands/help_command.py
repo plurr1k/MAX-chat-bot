@@ -1,0 +1,38 @@
+from config import dp
+from maxapi import F
+from maxapi.enums import parse_mode
+from maxapi.types import MessageCreated
+
+@dp.message_created(F.message.body.text.startswith("/help"))
+async def help_command(event: MessageCreated):
+    """Обработчик команды /help"""
+    response = (
+        "🤖 *ПОМОЩЬ ПО КОМАНДАМ*\n\n"
+        
+        "👤 *Информация о пользователях:*\n"
+        "/myinfo - Ваша полная информация\n"
+        "/userinfo [ID/@username] - Полная информация о пользователе в группах бота\n"
+        "/getid - ID текущего чата\n\n"
+        
+        "💬 *Управление чатами:*\n"
+        "/setchat - Установить рабочий чат\n"
+        "/chatinfo [Ничего/ID] - Информация о текущем чате либо о чате по ID\n\n"
+
+        "👥 *Участники чата:*\n"
+        "/random - Случайный участник\n"
+        "/randomverify [CHAT_ID1] [CHAT_ID2] - Случайный верифицированный участник\n"
+        "/count - Количество участников\n"
+
+        "👥 *Развлечения:*\n"
+        "/game - Игра с вопросами (100 баллов)\n"
+        "/окак - Вывод картинки окак\n"
+
+        "\n❓ *Помощь:*\n"
+        "/help - Эта справка\n"
+        "/start - Начальная информация"
+    )
+    
+    await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
+
+
+
