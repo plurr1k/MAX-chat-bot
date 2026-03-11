@@ -7,10 +7,13 @@ from utils.helpers import get_user_info_safe, get_chat_info_safe, get_chat_membe
 from commands.get_all_bot_chats import get_all_bot_chats
 from datetime import datetime
 from logger_config import logger
+from commands.user_subscribed import user_subscribed
 
 @dp.message_created(F.message.body.text.startswith("/userinfo"))
 async def user_full_info_command(event: MessageCreated):
     """Полная информация о пользователе со всеми полями"""
+    if await user_subscribed(event) == False:
+        return
     try:
         chat_id = event.message.recipient.chat_id
         chat = await bot.get_chat_by_id(chat_id)

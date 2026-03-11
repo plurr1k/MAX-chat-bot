@@ -10,7 +10,6 @@ from logger_config import logger
 @dp.message_created(F.message.body.text.startswith("/chats"))
 async def get_all_bot_chats(event: MessageCreated, answer: bool = True):
     """Получить список всех чатов, в которых состоит бот (с пагинацией)"""
-
     try:
         if event.message.sender.user_id not in config.ADMINS_ID and answer == True:
             return

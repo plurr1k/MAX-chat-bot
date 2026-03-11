@@ -6,9 +6,12 @@ from utils.helpers import get_user_info_safe, get_chat_title_by_id, get_chat_inf
 import config
 from datetime import datetime
 from logger_config import logger
+from commands.user_subscribed import user_subscribed
 
 @dp.message_created(F.message.body.text.startswith("/myinfo"))
 async def myinfo_command(event: MessageCreated):
+    if await user_subscribed(event) == False:
+        return
     """Полная информация о текущем пользователе"""
     try:
         user_info = await get_user_info_safe(event.message.sender)

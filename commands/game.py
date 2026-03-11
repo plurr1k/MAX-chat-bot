@@ -8,6 +8,7 @@ import asyncio
 import json
 from utils import game_stats as gs
 from typing import Dict
+from commands.user_subscribed import user_subscribed
 
 # ========== ЗАГРУЗКА ВОПРОСОВ ДЛЯ ИГРЫ ==========
 
@@ -125,6 +126,8 @@ class GameSession:
 
 @dp.message_created(F.message.body.text == "/game")
 async def game_command(event: MessageCreated):
+    if await user_subscribed(event) == False:
+        return
     """Начало игры"""
     try:
         user_id = event.message.sender.user_id
@@ -157,13 +160,7 @@ async def game_command(event: MessageCreated):
         
         sent_message = await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
         
-        message_id = None
-        if hasattr(sent_message, 'message_id'):
-            message_id = sent_message.message_id
-        elif hasattr(sent_message, 'id'):
-            message_id = sent_message.id
-        elif isinstance(sent_message, dict):
-            message_id = sent_message.get('message_id') or sent_message.get('id')
+        message_id = sent_message.message.body.mid
         
         if message_id:
             active_games[user_id].bot_message_id = message_id
@@ -199,7 +196,6 @@ async def game_confirm(event: MessageCreated):
             if game.bot_message_id:
                 try:
                     await bot.delete_message(
-                        chat_id=chat_id,
                         message_id=game.bot_message_id
                     )
                     logger.info(f"Удалено сообщение бота: {game.bot_message_id}")
@@ -224,18 +220,10 @@ async def game_confirm(event: MessageCreated):
             )
             
             sent_message = await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
+            message_id = sent_message.message.body.mid
             
-            message_id = None
-            if hasattr(sent_message, 'message_id'):
-                message_id = sent_message.message_id
-            elif hasattr(sent_message, 'id'):
-                message_id = sent_message.id
-            elif isinstance(sent_message, dict):
-                message_id = sent_message.get('message_id') or sent_message.get('id')
-            
-            if message_id:
-                game.bot_message_id = message_id
-                logger.info(f"Сохранен ID нового сообщения: {message_id}")
+            game.bot_message_id = message_id
+            logger.info(f"Сохранен ID нового сообщения: {message_id}")
             
         elif answer in ["нет", "no"]:
             try:
@@ -246,7 +234,6 @@ async def game_confirm(event: MessageCreated):
             if game.bot_message_id:
                 try:
                     await bot.delete_message(
-                        chat_id=chat_id,
                         message_id=game.bot_message_id
                     )
                 except:
@@ -301,7 +288,6 @@ async def game_answer(event: MessageCreated):
         if game.bot_message_id:
             try:
                 await bot.delete_message(
-                    chat_id=chat_id,
                     message_id=game.bot_message_id
                 )
                 logger.info(f"Удалено сообщение бота с вопросом: {game.bot_message_id}")
@@ -310,13 +296,7 @@ async def game_answer(event: MessageCreated):
         
         sent_message = await event.message.answer(result["message"], parse_mode=parse_mode.ParseMode.MARKDOWN)
         
-        message_id = None
-        if hasattr(sent_message, 'message_id'):
-            message_id = sent_message.message_id
-        elif hasattr(sent_message, 'id'):
-            message_id = sent_message.id
-        elif isinstance(sent_message, dict):
-            message_id = sent_message.get('message_id') or sent_message.get('id')
+        message_id = sent_message.message.body.mid
         
         if message_id:
             game.bot_message_id = message_id
@@ -350,20 +330,13 @@ async def game_answer(event: MessageCreated):
             
             final_message = await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
             
-            final_message_id = None
-            if hasattr(final_message, 'message_id'):
-                final_message_id = final_message.message_id
-            elif hasattr(final_message, 'id'):
-                final_message_id = final_message.id
-            elif isinstance(final_message, dict):
-                final_message_id = final_message.get('message_id') or final_message.get('id')
+            final_message_id = final_message.message.body.mid
             
             if final_message_id:
                 async def delete_later():
                     await asyncio.sleep(30)
                     try:
                         await bot.delete_message(
-                            chat_id=chat_id,
                             message_id=final_message_id
                         )
                         logger.info(f"Удалено финальное сообщение: {final_message_id}")
@@ -396,13 +369,7 @@ async def game_answer(event: MessageCreated):
                 
                 sent_message = await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
                 
-                message_id = None
-                if hasattr(sent_message, 'message_id'):
-                    message_id = sent_message.message_id
-                elif hasattr(sent_message, 'id'):
-                    message_id = sent_message.id
-                elif isinstance(sent_message, dict):
-                    message_id = sent_message.get('message_id') or sent_message.get('id')
+                message_id = sent_message.message.body.mid
                 
                 if message_id:
                     game.bot_message_id = message_id
@@ -423,13 +390,7 @@ async def game_answer(event: MessageCreated):
                 
                 sent_message = await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
                 
-                message_id = None
-                if hasattr(sent_message, 'message_id'):
-                    message_id = sent_message.message_id
-                elif hasattr(sent_message, 'id'):
-                    message_id = sent_message.id
-                elif isinstance(sent_message, dict):
-                    message_id = sent_message.get('message_id') or sent_message.get('id')
+                message_id = sent_message.message.body.mid
                 
                 if message_id:
                     game.bot_message_id = message_id
@@ -440,6 +401,8 @@ async def game_answer(event: MessageCreated):
 
 @dp.message_created(F.message.body.text == "/stats")
 async def game_stats_command(event: MessageCreated):
+    if await user_subscribed(event) == False:
+        return
     """Просмотр статистики игрока"""
     try:
         user_id = event.message.sender.user_id

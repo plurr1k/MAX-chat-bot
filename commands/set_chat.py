@@ -10,7 +10,6 @@ from commands.get_all_bot_chats import get_all_bot_chats
 @dp.message_created(F.message.body.text.startswith("/setchat"))
 async def set_chat(event: MessageCreated):
 
-
     chat_id = event.message.recipient.chat_id
     chat = await bot.get_chat_by_id(chat_id)
     chat_info = await get_chat_info_safe(chat)

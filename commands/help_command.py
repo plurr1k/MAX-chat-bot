@@ -2,9 +2,13 @@ from config import dp
 from maxapi import F
 from maxapi.enums import parse_mode
 from maxapi.types import MessageCreated
+from commands.user_subscribed import user_subscribed
 
 @dp.message_created(F.message.body.text.startswith("/help"))
 async def help_command(event: MessageCreated):
+    if await user_subscribed(event) == False:
+        return
+
     """Обработчик команды /help"""
     response = (
         "🤖 *ПОМОЩЬ ПО КОМАНДАМ*\n\n"

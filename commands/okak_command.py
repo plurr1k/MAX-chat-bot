@@ -6,10 +6,13 @@ from maxapi.enums.upload_type import UploadType
 import json
 from logger_config import logger
 import config
+from commands.user_subscribed import user_subscribed
 
 @dp.message_created(F.message.body.text.startswith("/окак"))
 async def okak_command(event: MessageCreated):
     """Вывод картинки мема окак и удаление команды"""
+    if await user_subscribed(event) == False:
+        return
     try:
         # Сначала удаляем сообщение с командой
         await event.message.delete()

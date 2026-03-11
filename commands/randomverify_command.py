@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 import json, os
 from logger_config import logger
 from maxapi.utils.inline_keyboard import InlineKeyboardBuilder
+from commands.user_subscribed import user_subscribed
 from maxapi.types.attachments.buttons import CallbackButton
 
 @dp.message_created(F.message.body.text.startswith("/randomverify"))
@@ -17,6 +18,8 @@ async def randomverify_command(event: MessageCreated):
     /randomverify CHAT_ID_1 CHAT_ID_2
     После запуска показывает кнопки для выбора количества участников (1, 5, 10)
     """
+    if await user_subscribed(event) == False:
+        return
     try:
         parts = event.message.body.text.strip().split()
         if len(parts) != 3:

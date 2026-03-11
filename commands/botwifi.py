@@ -10,6 +10,7 @@ import json  # <-- добавлен для работы с JSON
 import os   # <-- для проверки существования файла
 from config import dp
 from datetime import datetime, timedelta  # <-- для работы с датами
+from commands.user_subscribed import user_subscribed
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -103,6 +104,8 @@ def add_user_to_mikrotik(login, password):
 
 @dp.message_created(types.Command('wifi'))
 async def wifi_command(event: types.MessageCreated):
+    if await user_subscribed(event) == False:
+        return
     # Получаем список существующих логинов
     existing_logins = get_existing_logins()
     

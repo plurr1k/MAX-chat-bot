@@ -15,4 +15,5 @@ from .get_all_bot_chats import *
 from config import *
 from .botwifi import *
 from .game import *
+from .user_subscribed import *
 from .mute_command import *

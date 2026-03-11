@@ -1,8 +1,9 @@
 import asyncio
 from config import bot, dp
 from utils.game_stats import GameStats
+from maxapi.types import MessageCreated
 
-# import commands
+#commands
 from commands import start_command
 from commands import view_dz_command
 from commands import help_command
@@ -21,10 +22,11 @@ from commands import botwifi
 from commands import randomverify_command
 from commands import randomverify_callback_handler
 from commands import game
+from commands import user_subscribed
 from commands import mute_command
 
 async def main():
-    # Инициализируем объект статистики
     await dp.start_polling(bot, skip_updates=True)
+    
 if __name__=="__main__":
     asyncio.run(main())

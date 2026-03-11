@@ -4,9 +4,12 @@ from maxapi.types import MessageCreated
 from datetime import datetime
 import random
 from logger_config import logger
+from commands.user_subscribed import user_subscribed
 
 @dp.message_created(F.message.body.text.regexp(r'^/view\s+(?:DZ|dz|ДЗ|дз)$'))
 async def view_dz_command(event: MessageCreated):
+    if await user_subscribed(event) == False:
+        return
     """Вывод списка дней недели с мотивационными фразами (без смайликов)"""
     try:
         # Словарь с фразами для каждого дня недели

@@ -6,10 +6,13 @@ from utils.helpers import get_chat_info_safe, get_chat_members_from_event, get_c
 import config
 from logger_config import logger
 from datetime import datetime
+from commands.user_subscribed import user_subscribed
 
 @dp.message_created(F.message.body.text.startswith("/count"))
 async def count_command(event: MessageCreated):
     """Показать количество участников чата и статистику"""
+    if await user_subscribed(event) == False:
+        return
     try:
         chat_id = event.message.recipient.chat_id
         chat = await bot.get_chat_by_id(chat_id)

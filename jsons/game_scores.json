@@ -451,9 +451,24 @@
                 "date": "2026-03-11 12:17:12",
                 "score": 160,
                 "super_game": false
+            },
+            {
+                "date": "2026-03-11 13:45:07",
+                "score": 260,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-11 13:46:43",
+                "score": 260,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-11 13:52:44",
+                "score": 260,
+                "super_game": false
             }
         ],
-        "best_score": 160
+        "best_score": 260
     },
     "25114893": {
         "name": "Артём",

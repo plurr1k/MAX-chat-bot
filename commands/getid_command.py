@@ -3,9 +3,12 @@ from maxapi import F
 from maxapi.types import MessageCreated
 from maxapi.enums import parse_mode
 from utils.helpers import get_chat_info_safe
+from commands.user_subscribed import user_subscribed
 
 @dp.message_created(F.message.body.text.startswith("/getid"))
 async def getid_command(event: MessageCreated):
+    if await user_subscribed(event) == False:
+        return
     """Узнать ID текущего чата"""
     chat_id = event.message.recipient.chat_id
     chat = await bot.get_chat_by_id(chat_id)

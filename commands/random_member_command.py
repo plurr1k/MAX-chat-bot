@@ -7,9 +7,12 @@ import config
 from logger_config import logger
 from maxapi.utils.inline_keyboard import InlineKeyboardBuilder
 from maxapi.types.attachments.buttons import CallbackButton
+from commands.user_subscribed import user_subscribed
 
 @dp.message_created(F.message.body.text == ("/random"))
 async def random_member_command(event: MessageCreated):
+    if await user_subscribed(event) == False:
+        return
     """Выбор случайного участника чата (отправка кнопок)"""
     try:
         chat_id = event.message.recipient.chat_id

@@ -3,9 +3,12 @@ from maxapi import F
 from maxapi.types import MessageCreated
 from utils.helpers import get_bot_info_safe
 from logger_config import logger
+from commands.user_subscribed import user_subscribed
 
 @dp.message_created(F.message.body.text.startswith("/start"))
 async def start_command(event: MessageCreated):
+    if await user_subscribed(event) == False:
+        return
     """Обработчик команды /start"""
     try:
         bot_info = await get_bot_info_safe()
