@@ -13,3 +13,6 @@ from .randomverify_command import *
 from .set_chat import *
 from .get_all_bot_chats import *
 from config import *
+from .botwifi import *
+from .game import *
+from .mute_command import *

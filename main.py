@@ -1,5 +1,6 @@
 import asyncio
 from config import bot, dp
+from utils.game_stats import GameStats
 
 # import commands
 from commands import start_command
@@ -16,10 +17,14 @@ from commands import count_command
 from commands import random_member_command
 from commands import handle_btn_rnd
 from commands import set_verify_days
+from commands import botwifi
 from commands import randomverify_command
 from commands import randomverify_callback_handler
+from commands import game
+from commands import mute_command
 
 async def main():
+    # Инициализируем объект статистики
     await dp.start_polling(bot, skip_updates=True)
 if __name__=="__main__":
     asyncio.run(main())
