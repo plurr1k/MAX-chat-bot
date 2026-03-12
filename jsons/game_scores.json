@@ -66,6 +66,11 @@
                 "date": "2026-03-12 14:10:44",
                 "score": 250,
                 "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:47:17",
+                "score": 280,
+                "super_game": false
             }
         ],
         "best_score": 730
@@ -432,6 +437,11 @@
                 "date": "2026-03-07 17:10:20",
                 "score": 1120,
                 "super_game": true
+            },
+            {
+                "date": "2026-03-12 15:28:12",
+                "score": 30,
+                "super_game": false
             }
         ],
         "best_score": 1120
@@ -496,9 +506,104 @@
                 "date": "2026-03-11 13:52:44",
                 "score": 260,
                 "super_game": false
+            },
+            {
+                "date": "2026-03-12 14:45:10",
+                "score": 70,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 14:59:19",
+                "score": 20,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:04:40",
+                "score": 30,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:09:59",
+                "score": 220,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:17:22",
+                "score": 310,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:18:37",
+                "score": 70,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:20:43",
+                "score": 30,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:30:35",
+                "score": 50,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:31:17",
+                "score": 30,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:32:23",
+                "score": 250,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:34:03",
+                "score": 160,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:34:31",
+                "score": 140,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:34:56",
+                "score": 250,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:35:38",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:36:02",
+                "score": 420,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:36:31",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:51:00",
+                "score": 70,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:59:24",
+                "score": 50,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:59:54",
+                "score": 370,
+                "super_game": false
             }
         ],
-        "best_score": 260
+        "best_score": 540
     },
     "25114893": {
         "name": "Артём",
@@ -547,5 +652,21 @@
             }
         ],
         "best_score": 510
+    },
+    "7891434": {
+        "name": "Владислав Константинович",
+        "games": [
+            {
+                "date": "2026-03-12 15:52:03",
+                "score": 50,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 15:53:13",
+                "score": 450,
+                "super_game": false
+            }
+        ],
+        "best_score": 450
     }
 }

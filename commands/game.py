@@ -86,12 +86,11 @@ class GameSession:
         if is_max:
             message = (
                 f"🎉 **НЕВЕРОЯТНО!** Вы выбрали самый редкий ответ!\n"
-                f"Ваш ответ: _{found_answer}_\n"
                 f"➕ Вы получаете **{points}** очков!\n\n"
             )
         else:
             message = (
-                f"✅ Принято! Ваш ответ: _{found_answer}_\n"
+                f"✅ Принято!"
                 f"➕ Очки: **{points}**\n\n"
             )
         if self.super_game_active:
@@ -268,7 +267,7 @@ async def game_command(event: MessageCreated):
     try:
         user_id = event.message.sender.user_id
         user_name = event.message.sender.first_name
-        
+        await event.message.delete()
         if not questions_data or not questions_data.get("questions"):
             await event.message.answer("❌ Игра временно недоступна. Вопросы не загружены.")
             return
@@ -450,23 +449,27 @@ async def game_confirm(event: MessageCreated):
             
     except Exception as e:
         logger.error(f"Ошибка в подтверждении игры: {e}")
-
+    
+result_message_id = None
 @dp.message_created(F.message.body.text.startswith(("/о ", "/o ", "/о", "/o")))
 async def game_answer(event: MessageCreated):
     """Обработка ответа на вопрос (команды /о и /o)"""
     try:
+        global result_message_id
         user_id = event.message.sender.user_id
         
         if user_id not in active_games:
+            await bot.delete_message(message_id = event.message.body.mid)
             await event.message.answer("❌ У вас нет активной игры. Начните новую с помощью /game")
             return
         
         game = active_games[user_id]
         
         if game.stage not in ["playing", "super_game"]:
+            await bot.delete_message(message_id = event.message.body.mid)
             await event.message.answer("❌ Сейчас не время для ответов. Дождитесь вопроса.")
             return
-        
+        await bot.delete_message(message_id = event.message.body.mid)
         text = event.message.body.text.strip()
         
         # Определяем, какая команда использована и извлекаем ответ
@@ -489,18 +492,21 @@ async def game_answer(event: MessageCreated):
             return
         
         answer = parts
-        
+
         result = game.check_answer(answer)
         
         if not result["success"]:
             await event.message.answer(result["message"])
             return
         
-        try:
-            await event.message.delete()
-        except Exception as e:
-            logger.warning(f"Не удалось удалить ответ пользователя: {e}")
-        
+        if result_message_id is not None:
+            try:
+                await bot.delete_message(
+                    message_id=result_message_id
+                )
+            except Exception as e:
+                logger.warning(f"Не удалось удалить сообщение бота: {e}")
+
         if game.bot_message_id:
             try:
                 await bot.delete_message(
@@ -509,16 +515,17 @@ async def game_answer(event: MessageCreated):
             except Exception as e:
                 logger.warning(f"Не удалось удалить сообщение бота: {e}")
         
-        sent_message = await event.message.answer(result["message"], parse_mode=parse_mode.ParseMode.MARKDOWN)
+        result_message = await event.message.answer(result["message"], parse_mode=parse_mode.ParseMode.MARKDOWN)
         
-        message_id = sent_message.message.body.mid
-        
-        if message_id:
-            game.bot_message_id = message_id
+        result_message_id = result_message.message.body.mid
         
         if result["game_finished"]:
             gs.game_stats.add_score(user_id, game.user_name, game.total_score, game.super_game_active)
             
+            await bot.delete_message(
+                message_id=result_message_id
+            )
+
             if game.total_score == MAX_TOTAL_SCORE:
                 response = (
                     f"🏆 **АБСОЛЮТНАЯ ПОБЕДА!** 🏆\n\n"
