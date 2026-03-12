@@ -6,9 +6,11 @@ from maxapi.types import MessageCreated
 from maxapi.enums import parse_mode
 import asyncio
 import json
+import math
 from utils import game_stats as gs
-from typing import Dict
+from typing import Dict, List, Tuple
 from commands.user_subscribed import user_subscribed
+from datetime import datetime
 
 # ========== ЗАГРУЗКА ВОПРОСОВ ДЛЯ ИГРЫ ==========
 
@@ -19,10 +21,10 @@ def load_questions():
             return json.load(f)
     except FileNotFoundError:
         logger.error("Файл questions.json не найден")
-        return {"questions": [], "super_question": {}}
+        return {"questions": [], "super_questions": []}
     except Exception as e:
         logger.error(f"Ошибка загрузки вопросов: {e}")
-        return {"questions": [], "super_question": {}}
+        return {"questions": [], "super_questions": []}
 
 questions_data = load_questions()
 
@@ -32,6 +34,9 @@ active_games = {}
 # Система подсчета очков
 SCORES = [10, 30, 60, 120, 180, 240]
 SUPER_SCORES = [400, 300, 200, 100, 50, 10]
+MAX_REGULAR_SCORE = 620  # Максимум в обычной игре (240+180+120+60+30? Нужно уточнить)
+MAX_TOTAL_SCORE = 1120  # Максимум с супер-игрой (620 + 400)
+THRESHOLD_SUPER_GAME = 600  # Порог для входа в супер-игру
 
 class GameSession:
     def __init__(self, user_id: int, user_name: str):
@@ -45,10 +50,11 @@ class GameSession:
         self.total_score = 0
         self.super_game_active = False
         self.bot_message_id = None
+        self.super_question = None
         
     def get_current_question(self):
         if self.super_game_active:
-            return questions_data["super_question"]
+            return self.super_question
         else:
             return self.questions[self.current_question_index]
     
@@ -104,7 +110,7 @@ class GameSession:
         if self.super_game_active:
             return True
         if self.current_question_index >= 2:
-            if self.score >= 600 and not self.super_game_active:
+            if self.score >= THRESHOLD_SUPER_GAME and not self.super_game_active:
                 return False
             return True
         return False
@@ -114,13 +120,143 @@ class GameSession:
             if self.current_question_index < 2:
                 self.current_question_index += 1
             else:
-                if self.score >= 600:
+                if self.score >= THRESHOLD_SUPER_GAME:
                     self.super_game_active = True
-                    logger.info(f"Игрок {self.user_id} прошел в супер-игру с {self.score} очками")
+                    if questions_data.get("super_questions"):
+                        self.super_question = random.choice(questions_data["super_questions"])
+                        logger.info(f"Игрок {self.user_id} прошел в супер-игру с {self.score} очками")
+                    else:
+                        logger.error("Нет доступных вопросов для супер-игры")
+                        self.stage = "finished"
                 else:
                     self.stage = "finished"
         else:
             self.stage = "finished"
+
+# ========== ФУНКЦИИ ДЛЯ РАСЧЕТА РЕЙТИНГА ==========
+
+def calculate_player_rating(user_id: int, user_data: dict) -> float:
+    """
+    Расчет комплексного рейтинга игрока
+    Возвращает число от 0 до 1000
+    """
+    games = user_data.get("games", [])
+    if not games:
+        return 0
+    
+    total_games = len(games)
+    
+    # 1. Процент идеальных игр (1120)
+    perfect_games = sum(1 for game in games if game.get("score", 0) >= MAX_TOTAL_SCORE)
+    perfect_games_ratio = perfect_games / total_games if total_games > 0 else 0
+    
+    # 2. Средний результат
+    avg_score = sum(game.get("score", 0) for game in games) / total_games
+    
+    # 3. Нормализованный средний результат (в процентах от максимума 1120)
+    avg_score_percentage = (avg_score / MAX_TOTAL_SCORE) * 100
+    
+    # 4. Коэффициент стабильности (чем меньше разброс, тем лучше)
+    if total_games > 1:
+        scores = [game.get("score", 0) for game in games]
+        variance = sum((s - avg_score) ** 2 for s in scores) / total_games
+        std_deviation = math.sqrt(variance)
+        # Нормализуем стандартное отклонение (меньше = лучше)
+        stability_factor = max(0, 100 - min(100, (std_deviation / MAX_TOTAL_SCORE) * 100))
+    else:
+        stability_factor = 100  # Для одного игрока максимальная стабильность
+    
+    # 5. Коэффициент активности (поощрение за количество игр)
+    activity_factor = min(100, math.log(total_games + 1, 2) * 20)
+    
+    # 6. Процент игр с супер-игрой (600+)
+    super_game_games = sum(1 for game in games if game.get("score", 0) >= THRESHOLD_SUPER_GAME)
+    super_game_ratio = super_game_games / total_games if total_games > 0 else 0
+    
+    # 7. Бонус за идеальные игры (дополнительный множитель)
+    perfect_bonus = (perfect_games_ratio * 50)  # 5% бонус
+    
+    # Итоговый рейтинг (взвешенная сумма)
+    rating = (
+        (perfect_games_ratio * 250) +          # 25% - идеальные игры (1120)
+        (avg_score_percentage * 2.5) +          # 25% - средний результат
+        (stability_factor * 2) +                 # 20% - стабильность
+        (activity_factor * 1.5) +                 # 15% - активность
+        (super_game_ratio * 100) +                # 10% - достижение супер-игры
+        perfect_bonus                             # 5% - бонус за идеальные игры
+    )
+    
+    return round(rating, 2)
+
+def get_detailed_player_stats(user_id: int, user_data: dict) -> dict:
+    """Получение детальной статистики для отображения"""
+    games = user_data.get("games", [])
+    total_games = len(games)
+    
+    if total_games == 0:
+        return {
+            "total_games": 0,
+            "max_score": 0,
+            "avg_score": 0,
+            "perfect_games": 0,
+            "super_game_games": 0,
+            "avg_score_percentage": 0,
+            "stability": 0,
+            "rating": 0
+        }
+    
+    max_score = user_data.get("best_score", 0)
+    
+    # Игры с максимальным результатом (1120)
+    perfect_games = sum(1 for game in games if game.get("score", 0) == MAX_TOTAL_SCORE)
+    
+    # Игры с прохождением порога в супер-игру (600+)
+    super_game_games = sum(1 for game in games if game.get("score", 0) >= THRESHOLD_SUPER_GAME)
+    
+    avg_score = sum(game.get("score", 0) for game in games) / total_games
+    
+    # Расчет стабильности
+    if total_games > 1:
+        scores = [game.get("score", 0) for game in games]
+        variance = sum((s - avg_score) ** 2 for s in scores) / total_games
+        std_deviation = math.sqrt(variance)
+        stability = max(0, 100 - min(100, (std_deviation / MAX_TOTAL_SCORE) * 100))
+    else:
+        stability = 100
+    
+    rating = calculate_player_rating(user_id, user_data)
+    
+    return {
+        "total_games": total_games,
+        "max_score": max_score,
+        "avg_score": round(avg_score, 1),
+        "perfect_games": perfect_games,
+        "super_game_games": super_game_games,
+        "avg_score_percentage": round((avg_score / MAX_TOTAL_SCORE) * 100, 1),
+        "stability": round(stability, 1),
+        "rating": rating
+    }
+
+def get_rating_tier(rating: float) -> str:
+    """Определение лиги игрока по рейтингу"""
+    if rating >= 900:
+        return "👑 Легенда"
+    elif rating >= 750:
+        return "💎 Мастер"
+    elif rating >= 600:
+        return "🥈 Профи"
+    elif rating >= 400:
+        return "🥉 Любитель"
+    elif rating >= 200:
+        return "📚 Новичок"
+    else:
+        return "🌱 Ученик"
+
+def get_rating_stars(rating: float) -> str:
+    """Получение визуального отображения рейтинга звездами"""
+    filled_stars = int(rating / 100)  # Количество заполненных звезд (от 0 до 10)
+    empty_stars = 10 - filled_stars
+    return "⭐" * filled_stars + "☆" * empty_stars
 
 # ========== ИГРОВЫЕ КОМАНДЫ ==========
 
@@ -153,7 +289,12 @@ async def game_command(event: MessageCreated):
             f"• Я задам тебе 3 вопроса\n"
             f"• У каждого вопроса 6 вариантов ответов\n"
             f"• Чем реже ответ, тем больше очков!\n"
-            f"• Если наберешь 600+ очков, попадешь в СУПЕР-ИГРУ!\n\n"
+            f"• Максимум в обычной игре: **{MAX_REGULAR_SCORE} очков**\n"
+            f"• Если наберешь **{THRESHOLD_SUPER_GAME}+ очков**, попадешь в СУПЕР-ИГРУ!\n"
+            f"• В супер-игре можно набрать еще **400 очков**\n"
+            f"• Абсолютный максимум: **{MAX_TOTAL_SCORE} очков**!\n"
+            f"• Для ответа используй команду: **/о <твой ответ>** (можно писать /o латиницей)\n"
+            f"• Для досрочного завершения игры используй /stopgame\n\n"
             f"**Напиши ДА, чтобы продолжить**\n"
             f"**Напиши НЕТ, чтобы отказаться**"
         )
@@ -168,6 +309,72 @@ async def game_command(event: MessageCreated):
         
     except Exception as e:
         logger.error(f"Ошибка в /game: {e}")
+        await event.message.answer(f"❌ Ошибка: {str(e)[:100]}")
+
+@dp.message_created(F.message.body.text == "/stopgame")
+async def stop_game_command(event: MessageCreated):
+    """Принудительное завершение игры"""
+    try:
+        user_id = event.message.sender.user_id
+        user_name = event.message.sender.first_name
+        
+        if user_id not in active_games:
+            await event.message.answer(
+                "❌ У вас нет активной игры.\n"
+                "Начните новую игру с помощью /game"
+            )
+            return
+        
+        game = active_games[user_id]
+        
+        if game.total_score > 0:
+            gs.game_stats.add_score(user_id, user_name, game.total_score, game.super_game_active)
+            
+            response = (
+                f"🛑 **ИГРА ПРЕРВАНА**\n\n"
+                f"Игрок: {user_name}\n"
+                f"Ваш итоговый счет: **{game.total_score}** (максимум: {MAX_TOTAL_SCORE})\n"
+                f"Прогресс: {int((game.total_score/MAX_TOTAL_SCORE)*100)}%\n"
+                f"Пройдено вопросов: {game.current_question_index + 1}\n"
+                f"{'✅ Были в супер-игре' if game.super_game_active else '❌ Супер-игра не достигнута'}\n\n"
+                f"Статистика сохранена! Для новой игры используйте /game"
+            )
+        else:
+            response = (
+                f"🛑 **ИГРА ПРЕРВАНА**\n\n"
+                f"Вы завершили игру, не набрав очков.\n"
+                f"Статистика не сохранена.\n"
+                f"Для новой игры используйте /game"
+            )
+        
+        if game.bot_message_id:
+            try:
+                await bot.delete_message(message_id=game.bot_message_id)
+            except:
+                pass
+        
+        try:
+            await event.message.delete()
+        except:
+            pass
+        
+        final_message = await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
+        
+        del active_games[user_id]
+        logger.info(f"Игровая сессия для пользователя {user_id} принудительно завершена")
+        
+        final_message_id = final_message.message.body.mid
+        if final_message_id:
+            async def delete_later():
+                await asyncio.sleep(30)
+                try:
+                    await bot.delete_message(message_id=final_message_id)
+                except:
+                    pass
+            asyncio.create_task(delete_later())
+        
+    except Exception as e:
+        logger.error(f"Ошибка в /stopgame: {e}")
         await event.message.answer(f"❌ Ошибка: {str(e)[:100]}")
 
 @dp.message_created(F.message.body.text.regexp(r'^(?:да|нет|ДА|НЕТ|Yes|NO|Да|Нет)$'))
@@ -185,7 +392,6 @@ async def game_confirm(event: MessageCreated):
             return
         
         answer = event.message.body.text.lower()
-        chat_id = event.message.recipient.chat_id
         
         if answer in ["да", "yes"]:
             try:
@@ -198,7 +404,6 @@ async def game_confirm(event: MessageCreated):
                     await bot.delete_message(
                         message_id=game.bot_message_id
                     )
-                    logger.info(f"Удалено сообщение бота: {game.bot_message_id}")
                 except Exception as e:
                     logger.warning(f"Не удалось удалить сообщение бота: {e}")
             
@@ -215,15 +420,16 @@ async def game_confirm(event: MessageCreated):
                 response += f"{i}. {ans}\n"
             
             response += (
-                f"\n📝 **Напиши ответ в виде:** `/otvet <твой ответ>`\n"
-                f"Пример: `/otvet {question['answers'][0]}`"
+                f"\n📝 **Напиши ответ в виде:** `/о <твой ответ>`\n"
+                f"Пример: `/о {question['answers'][0]}`\n"
+                f"Можно также использовать `/o` латиницей\n"
+                f"🛑 Для выхода из игры используй /stopgame"
             )
             
             sent_message = await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
             message_id = sent_message.message.body.mid
             
             game.bot_message_id = message_id
-            logger.info(f"Сохранен ID нового сообщения: {message_id}")
             
         elif answer in ["нет", "no"]:
             try:
@@ -245,9 +451,9 @@ async def game_confirm(event: MessageCreated):
     except Exception as e:
         logger.error(f"Ошибка в подтверждении игры: {e}")
 
-@dp.message_created(F.message.body.text.startswith("/otvet"))
+@dp.message_created(F.message.body.text.startswith(("/о ", "/o ", "/о", "/o")))
 async def game_answer(event: MessageCreated):
-    """Обработка ответа на вопрос"""
+    """Обработка ответа на вопрос (команды /о и /o)"""
     try:
         user_id = event.message.sender.user_id
         
@@ -262,17 +468,27 @@ async def game_answer(event: MessageCreated):
             return
         
         text = event.message.body.text.strip()
-        parts = text.split(maxsplit=1)
         
-        if len(parts) < 2:
+        # Определяем, какая команда использована и извлекаем ответ
+        if text.startswith("/о "):
+            parts = text[3:].strip()  # Убираем "/о " и пробелы
+        elif text.startswith("/o "):
+            parts = text[3:].strip()  # Убираем "/o " и пробелы
+        elif text == "/о" or text == "/o":
+            parts = ""  # Команда без аргументов
+        else:
+            # На случай если команда написана слитно или с другими вариациями
+            parts = text[2:].strip() if len(text) > 2 else ""
+        
+        if not parts:
             await event.message.answer(
-                "❌ Напишите ответ в формате: `/otvet <ваш ответ>`",
+                "❌ Напишите ответ в формате: `/о <ваш ответ>` или `/o <ваш ответ>`\n"
+                f"Пример: `/о {game.get_current_question()['answers'][0]}`",
                 parse_mode=parse_mode.ParseMode.MARKDOWN
             )
             return
         
-        answer = parts[1]
-        chat_id = event.message.recipient.chat_id
+        answer = parts
         
         result = game.check_answer(answer)
         
@@ -290,7 +506,6 @@ async def game_answer(event: MessageCreated):
                 await bot.delete_message(
                     message_id=game.bot_message_id
                 )
-                logger.info(f"Удалено сообщение бота с вопросом: {game.bot_message_id}")
             except Exception as e:
                 logger.warning(f"Не удалось удалить сообщение бота: {e}")
         
@@ -300,31 +515,39 @@ async def game_answer(event: MessageCreated):
         
         if message_id:
             game.bot_message_id = message_id
-            logger.info(f"Сохранен ID сообщения с результатом: {message_id}")
         
         if result["game_finished"]:
             gs.game_stats.add_score(user_id, game.user_name, game.total_score, game.super_game_active)
             
-            if game.total_score >= 600 and game.super_game_active:
+            if game.total_score == MAX_TOTAL_SCORE:
                 response = (
-                    f"🏆 **ПОБЕДА!** 🏆\n\n"
+                    f"🏆 **АБСОЛЮТНАЯ ПОБЕДА!** 🏆\n\n"
+                    f"Ты набрал максимально возможное количество очков!\n"
+                    f"Итоговый счет: **{game.total_score}** из {MAX_TOTAL_SCORE}\n\n"
+                    f"ТЫ ЛЕГЕНДА! 👑"
+                )
+            elif game.total_score >= THRESHOLD_SUPER_GAME and game.super_game_active:
+                response = (
+                    f"🎉 **ПОБЕДА!** 🎉\n\n"
                     f"Ты прошел супер-игру!\n"
-                    f"Итоговый счет: **{game.total_score}**\n\n"
-                    f"Ты настоящий чемпион! 🎉"
+                    f"Итоговый счет: **{game.total_score}** из {MAX_TOTAL_SCORE}\n"
+                    f"Прогресс: {int((game.total_score/MAX_TOTAL_SCORE)*100)}%\n\n"
+                    f"Ты настоящий чемпион! ⭐"
                 )
             else:
                 response = (
                     f"🎯 **ИГРА ОКОНЧЕНА**\n\n"
-                    f"Твой итоговый счет: **{game.total_score}**\n\n"
+                    f"Твой итоговый счет: **{game.total_score}** из {MAX_TOTAL_SCORE}\n"
+                    f"Прогресс: {int((game.total_score/MAX_TOTAL_SCORE)*100)}%\n\n"
                 )
-                if game.total_score >= 600:
+                if game.total_score >= THRESHOLD_SUPER_GAME:
                     response += (
-                        f"⭐ Ты набрал 600+ очков и прошел в супер-игру!\n"
-                        f"Сыграй еще раз, чтобы покорить ее!"
+                        f"⭐ Ты набрал {THRESHOLD_SUPER_GAME}+ очков и прошел в супер-игру!\n"
+                        f"Сыграй еще раз, чтобы покорить абсолютный максимум!"
                     )
                 else:
                     response += (
-                        f"В следующий раз повезет больше!\n"
+                        f"В следующий раз повезет больше! Нужно {THRESHOLD_SUPER_GAME} очков для супер-игры.\n"
                         f"Для новой игры используй /game"
                     )
             
@@ -339,13 +562,11 @@ async def game_answer(event: MessageCreated):
                         await bot.delete_message(
                             message_id=final_message_id
                         )
-                        logger.info(f"Удалено финальное сообщение: {final_message_id}")
                     except Exception as e:
                         logger.warning(f"Не удалось удалить финальное сообщение: {e}")
                 asyncio.create_task(delete_later())
             
             del active_games[user_id]
-            logger.info(f"Игровая сессия для пользователя {user_id} удалена")
             
         else:
             game.next_question()
@@ -364,7 +585,11 @@ async def game_answer(event: MessageCreated):
                 
                 response += (
                     f"\n📝 В супер-игре **самый популярный** ответ дает 400 очков!\n"
-                    f"Напиши: `/otvet <твой ответ>`"
+                    f"**Самый редкий** ответ дает 10 очков.\n"
+                    f"Максимум за супер-игру: 400 очков\n"
+                    f"Общий максимум: {MAX_TOTAL_SCORE} очков\n"
+                    f"Напиши: `/о <твой ответ>` или `/o <твой ответ>`\n"
+                    f"🛑 Для выхода из игры используй /stopgame"
                 )
                 
                 sent_message = await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
@@ -386,7 +611,8 @@ async def game_answer(event: MessageCreated):
                 for i, ans in enumerate(question['answers'], 1):
                     response += f"{i}. {ans}\n"
                 
-                response += f"\n📝 `/otvet <твой ответ>`"
+                response += f"\n📝 `/о <твой ответ>` или `/o <твой ответ>`\n"
+                response += f"🛑 Для выхода из игры используй /stopgame"
                 
                 sent_message = await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
                 
@@ -418,17 +644,21 @@ async def game_stats_command(event: MessageCreated):
             )
             return
         
-        games_played = len(stats["games"])
-        best_score = stats["best_score"]
-        last_game = stats["games"][-1]
+        detailed = get_detailed_player_stats(user_id, stats)
+        rating_tier = get_rating_tier(detailed["rating"])
+        rating_stars = get_rating_stars(detailed["rating"])
         
         response = (
-            f"📊 **Статистика игрока {user_name}**\n\n"
-            f"🎮 Сыграно игр: {games_played}\n"
-            f"🏆 Лучший результат: {best_score}\n"
-            f"📅 Последняя игра: {last_game['date']}\n"
-            f"   • Счет: {last_game['score']}\n"
-            f"   • Супер-игра: {'✅ Да' if last_game['super_game'] else '❌ Нет'}\n"
+            f"🎮 **{user_name}**\n"
+            f"{rating_tier}\n"
+            f"🏆 Рейтинг: {detailed['rating']}\n"
+            f"{rating_stars}\n"
+            f"├─ 🎯 Игр: {detailed['total_games']} (идеальных: {detailed['perfect_games']})\n"
+            f"├─ 🎯 Супер-игр: {detailed['super_game_games']}\n"
+            f"├─ 🎯 Лучший счет: {detailed['max_score']}\n"
+            f"├─ 📊 Средний счет: {detailed['avg_score']} ({detailed['avg_score_percentage']}%)\n"
+            f"├─ 🏆 Рекорд: {detailed['max_score']}\n"
+            f"└─ 📈 Стабильность: {detailed['stability']}%"
         )
         
         await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
@@ -439,7 +669,7 @@ async def game_stats_command(event: MessageCreated):
 
 @dp.message_created(F.message.body.text == "/top")
 async def game_top_command(event: MessageCreated):
-    """Топ игроков"""
+    """Топ игроков по комплексному рейтингу"""
     try:
         stats = gs.game_stats.scores
         
@@ -447,17 +677,42 @@ async def game_top_command(event: MessageCreated):
             await event.message.answer("📊 Пока нет статистики игр.")
             return
         
-        top_players = sorted(
-            stats.items(),
-            key=lambda x: x[1]["best_score"],
-            reverse=True
-        )[:10]
+        # Рассчитываем рейтинг для каждого игрока
+        players_with_rating = []
+        for user_id, user_data in stats.items():
+            if user_data.get("games"):  # Только игроки с хотя бы одной игрой
+                rating = calculate_player_rating(user_id, user_data)
+                detailed = get_detailed_player_stats(user_id, user_data)
+                players_with_rating.append({
+                    "name": user_data.get("name", "Неизвестный"),
+                    "rating": rating,
+                    "tier": get_rating_tier(rating),
+                    "stars": get_rating_stars(rating)
+                })
         
-        response = "🏆 **ТОП-10 ИГРОКОВ** 🏆\n\n"
+        # Сортируем по рейтингу (от большего к меньшему)
+        top_players = sorted(players_with_rating, key=lambda x: x["rating"], reverse=True)[:15]
         
-        for i, (user_id, data) in enumerate(top_players, 1):
-            response += f"{i}. {data['name']} — **{data['best_score']}** очков\n"
-            response += f"   🎮 Игр: {len(data['games'])}\n"
+        response = "🏆 **ТОП-15 ИГРОКОВ** 🏆\n\n"
+        
+        # Добавляем топ игроков
+        for i, player in enumerate(top_players, 1):
+            # Определяем медаль для первых трех мест
+            if i == 1:
+                medal = "🥇"
+            elif i == 2:
+                medal = "🥈"
+            elif i == 3:
+                medal = "🥉"
+            else:
+                medal = f"{i}."
+            
+            response += (
+                f"{medal} **{player['name']}**\n"
+                f"{player['tier']}\n"
+                f"⚡ Рейтинг: {player['rating']}\n"
+                f"{player['stars']}\n\n"
+            )
         
         await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
         
