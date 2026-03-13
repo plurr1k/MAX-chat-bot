@@ -7,15 +7,65 @@ from utils.helpers import get_chat_info_safe
 from maxapi.enums import parse_mode, chat_type
 from maxapi.types import MessageCreated
 import config
+import json
+from maxapi import F
 
 # ========== КЛАСС ДЛЯ УПРАВЛЕНИЯ МУТАМИ ==========
 
 class MuteManager:
     def __init__(self):
+        self.data_file = "jsons/mute_data.json"
         self.user_messages = defaultdict(lambda: defaultdict(list))
         self.muted_users = defaultdict(dict)
         self.user_mute_history = defaultdict(dict)
-        
+        self.load_data()
+
+    def load_data(self):
+        """Загружает данные из JSON файла с преобразованием ключей в int"""
+        try:
+            with open(self.data_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                
+                # Загрузка muted_users с преобразованием ключей
+                muted_users_data = {}
+                for chat_id_str, users in data.get('muted_users', {}).items():
+                    chat_id = int(chat_id_str)
+                    muted_users_data[chat_id] = {}
+                    for user_id_str, info in users.items():
+                        user_id = int(user_id_str)
+                        if 'mute_end_time' in info:
+                            info['mute_end_time'] = datetime.fromisoformat(info['mute_end_time'])
+                        muted_users_data[chat_id][user_id] = info
+                self.muted_users = defaultdict(dict, muted_users_data)
+                
+                # Загрузка user_mute_history с преобразованием ключей
+                history_data = {}
+                for user_id_str, hist in data.get('user_mute_history', {}).items():
+                    user_id = int(user_id_str)
+                    if 'first_mute_time' in hist:
+                        hist['first_mute_time'] = datetime.fromisoformat(hist['first_mute_time'])
+                    if 'last_mute_time' in hist:
+                        hist['last_mute_time'] = datetime.fromisoformat(hist['last_mute_time'])
+                    history_data[user_id] = hist
+                self.user_mute_history = defaultdict(dict, history_data)
+                
+        except FileNotFoundError:
+            pass
+        except Exception as e:
+            logger.error(f"Ошибка загрузки данных из JSON: {e}")
+
+    def save_data(self):
+        """Сохраняет данные в JSON файл"""
+        try:
+            data = {
+                'muted_users': dict(self.muted_users),
+                'user_mute_history': dict(self.user_mute_history)
+            }
+            with open(self.data_file, 'w', encoding='utf-8') as f:
+                json.dump(data, f, default=lambda o: o.isoformat() if isinstance(o, datetime) else str(o), ensure_ascii=False, indent=4)
+        except Exception as e:
+            logger.error(f"Ошибка сохранения данных в JSON: {e}")
+
     def check_flood(self, chat_id: int, user_id: int, current_time: datetime) -> bool:
         """Проверяет, является ли сообщение флудом (5+ сообщений за 5 секунд)"""
         self.user_messages[chat_id][user_id] = [
@@ -65,12 +115,21 @@ class MuteManager:
         self.user_mute_history[user_id]['mute_count'] = mute_count
         self.user_mute_history[user_id]['last_mute_time'] = current_time
         
+        self.save_data()
         return {
             'mute_end': mute_end,
             'duration': mute_duration,
             'reason': mute_reason,
             'mute_count': mute_count
         }
+    
+    def unmute_user(self, chat_id: int, user_id: int):
+        """Размучивает пользователя в чате"""
+        if user_id in self.muted_users[chat_id]:
+            del self.muted_users[chat_id][user_id]
+            self.save_data()
+            return True
+        return False
     
     def cleanup_old_data(self, current_time: datetime):
         """Очищает устаревшие данные"""
@@ -92,6 +151,7 @@ class MuteManager:
             if 'first_mute_time' in self.user_mute_history[user_id]:
                 if (current_time - self.user_mute_history[user_id]['first_mute_time']).total_seconds() > 24 * 3600:
                     del self.user_mute_history[user_id]
+        self.save_data()
 
 # Создаем глобальный экземпляр менеджера мутов
 mute_manager = MuteManager()
@@ -108,6 +168,10 @@ async def cleanup_task():
             await asyncio.sleep(60)
 
 # ========== ОБРАБОТЧИК АНТИСПАМА ==========
+@dp.message_created(F.message.body.text.startswith("/unmute"))
+async def unmute(event: MessageCreated):
+    """Размут пользователя"""
+
 
 @dp.message_created()
 async def anti_spam_handler(event: MessageCreated):
