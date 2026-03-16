@@ -1,8 +1,8 @@
 import asyncio
 from config import bot, dp
+from mute_middleware import AntiSpamMiddleware
 from utils.game_stats import GameStats
 from maxapi.types import MessageCreated
-
 #commands
 from commands import start_command
 from commands import view_dz_command
@@ -23,9 +23,9 @@ from commands import randomverify_command
 from commands import randomverify_callback_handler
 from commands import game
 from commands import user_subscribed
-from commands import mute_command
 
 async def main():
+    dp.middleware(AntiSpamMiddleware())
     await dp.start_polling(bot, skip_updates=True)
     
 if __name__=="__main__":

@@ -1,5 +1,5 @@
 from config import bot, dp
-from maxapi import F
+from maxapi import F, types
 from maxapi.types import MessageCreated
 from maxapi.enums import chat_type, parse_mode
 from commands.user_subscribed import user_subscribed
@@ -9,7 +9,7 @@ from commands.get_all_bot_chats import get_all_bot_chats
 import config
 from logger_config import logger
 
-@dp.message_created(F.message.body.text.startswith("/chatinfo"))
+@dp.message_created(types.Command("chatinfo"))
 async def chatinfo_command(event: MessageCreated):
     """Информация о текущем чате либо о чате по ID"""
     if await user_subscribed(event) == False:

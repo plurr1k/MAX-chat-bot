@@ -68,18 +68,18 @@
                 "super_game": false
             },
             {
-                "date": "2026-03-12 15:47:17",
-                "score": 280,
+                "date": "2026-03-12 17:42:31",
+                "score": 310,
                 "super_game": false
             },
             {
-                "date": "2026-03-13 13:21:56",
-                "score": 160,
+                "date": "2026-03-13 17:02:52",
+                "score": 30,
                 "super_game": false
             },
             {
-                "date": "2026-03-13 13:25:00",
-                "score": 220,
+                "date": "2026-03-15 12:42:31",
+                "score": 240,
                 "super_game": false
             }
         ],
@@ -255,6 +255,36 @@
                 "date": "2026-03-07 17:03:43",
                 "score": 1120,
                 "super_game": true
+            },
+            {
+                "date": "2026-03-12 20:01:17",
+                "score": 710,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-12 20:13:35",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 20:16:06",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 07:36:24",
+                "score": 480,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 08:25:45",
+                "score": 710,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-15 11:13:37",
+                "score": 860,
+                "super_game": true
             }
         ],
         "best_score": 1120
@@ -281,6 +311,21 @@
             {
                 "date": "2026-03-05 22:21:42",
                 "score": 490,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 20:36:27",
+                "score": 370,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 22:23:30",
+                "score": 130,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-15 13:19:14",
+                "score": 300,
                 "super_game": false
             }
         ],
@@ -390,6 +435,16 @@
                 "date": "2026-03-07 15:57:50",
                 "score": 1120,
                 "super_game": true
+            },
+            {
+                "date": "2026-03-13 07:52:44",
+                "score": 220,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 10:32:58",
+                "score": 120,
+                "super_game": false
             }
         ],
         "best_score": 1120
@@ -447,11 +502,6 @@
                 "date": "2026-03-07 17:10:20",
                 "score": 1120,
                 "super_game": true
-            },
-            {
-                "date": "2026-03-12 15:28:12",
-                "score": 30,
-                "super_game": false
             }
         ],
         "best_score": 1120
@@ -474,9 +524,114 @@
                 "date": "2026-03-06 08:44:25",
                 "score": 100,
                 "super_game": false
+            },
+            {
+                "date": "2026-03-12 21:14:59",
+                "score": 450,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 21:17:40",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-12 21:20:22",
+                "score": 370,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 07:19:18",
+                "score": 480,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 07:22:50",
+                "score": 360,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 07:39:24",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 07:40:54",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 07:42:08",
+                "score": 30,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 07:43:37",
+                "score": 480,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 07:45:07",
+                "score": 430,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 07:47:30",
+                "score": 610,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-13 07:49:13",
+                "score": 700,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-13 07:50:41",
+                "score": 450,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 07:52:42",
+                "score": 1000,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-13 07:55:11",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 07:56:26",
+                "score": 480,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 12:37:39",
+                "score": 1000,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-14 13:46:46",
+                "score": 420,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 13:49:09",
+                "score": 730,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-14 18:33:56",
+                "score": 1060,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-15 08:11:59",
+                "score": 650,
+                "super_game": true
             }
         ],
-        "best_score": 100
+        "best_score": 1060
     },
     "26349238": {
         "name": "Денис",
@@ -516,144 +671,9 @@
                 "date": "2026-03-11 13:52:44",
                 "score": 260,
                 "super_game": false
-            },
-            {
-                "date": "2026-03-12 14:45:10",
-                "score": 70,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 14:59:19",
-                "score": 20,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:04:40",
-                "score": 30,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:09:59",
-                "score": 220,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:17:22",
-                "score": 310,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:18:37",
-                "score": 70,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:20:43",
-                "score": 30,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:30:35",
-                "score": 50,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:31:17",
-                "score": 30,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:32:23",
-                "score": 250,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:34:03",
-                "score": 160,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:34:31",
-                "score": 140,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:34:56",
-                "score": 250,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:35:38",
-                "score": 540,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:36:02",
-                "score": 420,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:36:31",
-                "score": 540,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:51:00",
-                "score": 70,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:59:24",
-                "score": 50,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-12 15:59:54",
-                "score": 370,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-13 13:19:57",
-                "score": 50,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-13 14:48:17",
-                "score": 30,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-13 14:50:12",
-                "score": 200,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-13 15:06:31",
-                "score": 50,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-13 15:09:50",
-                "score": 30,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-13 15:10:21",
-                "score": 30,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-13 15:13:37",
-                "score": 250,
-                "super_game": false
-            },
-            {
-                "date": "2026-03-13 15:26:21",
-                "score": 100,
-                "super_game": false
             }
         ],
-        "best_score": 540
+        "best_score": 260
     },
     "25114893": {
         "name": "Артём",
@@ -703,20 +723,274 @@
         ],
         "best_score": 510
     },
-    "7891434": {
-        "name": "Владислав Константинович",
+    "42189713": {
+        "name": "Юра",
         "games": [
             {
-                "date": "2026-03-12 15:52:03",
-                "score": 50,
+                "date": "2026-03-12 20:12:48",
+                "score": 310,
                 "super_game": false
             },
             {
-                "date": "2026-03-12 15:53:13",
-                "score": 450,
+                "date": "2026-03-12 20:15:39",
+                "score": 280,
                 "super_game": false
             }
         ],
-        "best_score": 450
+        "best_score": 310
+    },
+    "115271701": {
+        "name": "Глеб",
+        "games": [
+            {
+                "date": "2026-03-13 08:37:00",
+                "score": 120,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 08:38:37",
+                "score": 70,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 08:43:34",
+                "score": 450,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 08:46:18",
+                "score": 480,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 08:47:52",
+                "score": 10,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 08:49:43",
+                "score": 360,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 08:50:46",
+                "score": 10,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 08:52:14",
+                "score": 420,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 08:53:44",
+                "score": 240,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 08:55:40",
+                "score": 310,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 08:58:46",
+                "score": 610,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-13 09:01:49",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 09:42:18",
+                "score": 330,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 09:44:27",
+                "score": 370,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 09:46:50",
+                "score": 860,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-13 09:49:27",
+                "score": 1020,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-13 09:51:16",
+                "score": 420,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 09:52:43",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 17:21:08",
+                "score": 1060,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-13 17:25:04",
+                "score": 250,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 17:27:22",
+                "score": 10,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 17:33:57",
+                "score": 260,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-13 17:37:43",
+                "score": 390,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 08:40:53",
+                "score": 430,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 08:42:15",
+                "score": 510,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 08:43:36",
+                "score": 10,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 08:44:32",
+                "score": 10,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 08:47:09",
+                "score": 420,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 08:49:35",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 08:58:34",
+                "score": 860,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-14 09:46:58",
+                "score": 700,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-14 09:48:53",
+                "score": 420,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 09:50:08",
+                "score": 90,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 10:33:20",
+                "score": 540,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 10:34:49",
+                "score": 420,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 10:36:47",
+                "score": 700,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-14 10:39:47",
+                "score": 30,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 11:21:33",
+                "score": 480,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 11:22:36",
+                "score": 300,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 11:24:32",
+                "score": 730,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-14 11:27:27",
+                "score": 1060,
+                "super_game": true
+            },
+            {
+                "date": "2026-03-14 11:33:15",
+                "score": 10,
+                "super_game": false
+            },
+            {
+                "date": "2026-03-14 11:34:33",
+                "score": 360,
+                "super_game": false
+            }
+        ],
+        "best_score": 1060
+    },
+    "76686669": {
+        "name": "Вячеслав Викторович",
+        "games": [
+            {
+                "date": "2026-03-13 18:29:20",
+                "score": 100,
+                "super_game": false
+            }
+        ],
+        "best_score": 100
+    },
+    "38627188": {
+        "name": "Елизавета",
+        "games": [
+            {
+                "date": "2026-03-13 20:11:34",
+                "score": 360,
+                "super_game": false
+            }
+        ],
+        "best_score": 360
+    },
+    "55039514": {
+        "name": "Елизавета",
+        "games": [
+            {
+                "date": "2026-03-13 21:08:40",
+                "score": 90,
+                "super_game": false
+            }
+        ],
+        "best_score": 90
     }
 }

@@ -1,6 +1,6 @@
 from config import bot, dp
 import config
-from maxapi import F
+from maxapi import F, types
 from maxapi.types import MessageCreated
 from maxapi.enums import parse_mode
 from utils.helpers import get_user_info_safe, get_chat_info_safe, get_chat_members_from_event, get_chat_user_join_time
@@ -9,7 +9,7 @@ from datetime import datetime
 from logger_config import logger
 from commands.user_subscribed import user_subscribed
 
-@dp.message_created(F.message.body.text.startswith("/userinfo"))
+@dp.message_created(types.Command('userinfo'))
 async def user_full_info_command(event: MessageCreated):
     """Полная информация о пользователе со всеми полями"""
     if await user_subscribed(event) == False:

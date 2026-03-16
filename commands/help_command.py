@@ -1,10 +1,11 @@
 from config import dp
-from maxapi import F
+from maxapi import F, types
 from maxapi.enums import parse_mode
 from maxapi.types import MessageCreated
 from commands.user_subscribed import user_subscribed
+from mute_middleware import AntiSpamMiddleware
 
-@dp.message_created(F.message.body.text.startswith("/help"))
+@dp.message_created(types.Command('help'))
 async def help_command(event: MessageCreated):
     if await user_subscribed(event) == False:
         return

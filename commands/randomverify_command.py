@@ -1,6 +1,6 @@
 from config import bot, dp
 import config
-from maxapi import F
+from maxapi import F, types
 from maxapi.types import MessageCreated
 from maxapi.enums import parse_mode
 from utils.helpers import get_chat_info_safe, get_chat_members_from_event
@@ -12,7 +12,7 @@ from maxapi.utils.inline_keyboard import InlineKeyboardBuilder
 from commands.user_subscribed import user_subscribed
 from maxapi.types.attachments.buttons import CallbackButton
 
-@dp.message_created(F.message.body.text.startswith("/randomverify"))
+@dp.message_created(types.Command('randomverify'))
 async def randomverify_command(event: MessageCreated):
     """
     /randomverify CHAT_ID_1 CHAT_ID_2

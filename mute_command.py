@@ -16,6 +16,7 @@ class MuteManager:
     def __init__(self):
         self.data_file = "jsons/mute_data.json"
         self.user_messages = defaultdict(lambda: defaultdict(list))
+        self.user_commands = defaultdict(lambda: defaultdict(list))
         self.muted_users = defaultdict(dict)
         self.user_mute_history = defaultdict(dict)
         self.load_data()
@@ -75,6 +76,18 @@ class MuteManager:
         self.user_messages[chat_id][user_id].append(current_time)
         return len(self.user_messages[chat_id][user_id]) >= 5
     
+    def check_command_spam(self, chat_id: int, user_id: int, current_time: datetime) -> bool:
+        """Проверяет спам командами (4+ команд за 8 секунд)"""
+        
+        self.user_commands[chat_id][user_id] = [
+            t for t in self.user_commands[chat_id][user_id]
+            if (current_time - t).total_seconds() <= 8
+        ]
+
+        self.user_commands[chat_id][user_id].append(current_time)
+
+
+        return len(self.user_commands[chat_id][user_id]) >= 4
     def is_muted(self, chat_id: int, user_id: int, current_time: datetime) -> bool:
         """Проверяет, замучен ли пользователь в чате"""
         if user_id in self.muted_users[chat_id]:
@@ -166,112 +179,3 @@ async def cleanup_task():
         except Exception as e:
             logger.error(f"Ошибка в задаче очистки: {e}")
             await asyncio.sleep(60)
-
-# ========== ОБРАБОТЧИК АНТИСПАМА ==========
-@dp.message_created(F.message.body.text.startswith("/unmute"))
-async def unmute(event: MessageCreated):
-    """Размут пользователя"""
-
-
-@dp.message_created()
-async def anti_spam_handler(event: MessageCreated):
-    """Проверяет сообщения на флуд и мутит нарушителей"""
-    try:
-        # Пропускаем сообщения от ботов и админов
-        if event.message.sender.is_bot:
-            return
-        
-        if event.message.sender.user_id in config.ADMINS_ID:
-            return
-        
-        # Проверяем тип чата (не обрабатываем личные сообщения)
-        chat_id = event.message.recipient.chat_id
-        chat = await bot.get_chat_by_id(chat_id)
-        chat_info = await get_chat_info_safe(chat)
-        
-        if chat_info['type'] == chat_type.ChatType.DIALOG:
-            return
-        
-        user_id = event.message.sender.user_id
-        user_name = event.message.sender.first_name
-        chat_title = chat_info.get('title', 'Неизвестный чат')
-        current_time = datetime.now()
-        
-        # Проверяем, не замучен ли пользователь
-        if mute_manager.is_muted(chat_id, user_id, current_time):
-            try:
-                await event.message.delete()
-                logger.info(f"Удалено сообщение замученного пользователя {user_id} в чате {chat_id}")
-            except Exception as e:
-                logger.warning(f"Не удалось удалить сообщение замученного пользователя: {e}")
-            return
-        
-        # Проверяем на флуд
-        if mute_manager.check_flood(chat_id, user_id, current_time):
-            mute_info = mute_manager.mute_user(chat_id, user_id, user_name, chat_title, current_time)
-            
-            # Удаляем текущее сообщение
-            try:
-                await event.message.delete()
-            except Exception as e:
-                logger.warning(f"Не удалось удалить сообщение: {e}")
-            
-            mute_end_str = mute_info['mute_end'].strftime("%d.%m.%Y %H:%M:%S")
-            mute_duration_str = "24 часа" if mute_info['duration'].days > 0 else "30 минут"
-            
-            private_message = (
-                f"🚫 **ВЫ ПОЛУЧИЛИ МУТ**\n\n"
-                f"Чат: {chat_title}\n"
-                f"Причина: {mute_info['reason']}\n"
-                f"Длительность: {mute_duration_str}\n"
-                f"Окончание мута: {mute_end_str}\n"
-                f"Нарушений за 24 часа: {mute_info['mute_count']}/3\n\n"
-                f"Пожалуйста, не флудите в чате!"
-            )
-            
-            # Отправляем личное сообщение
-            try:
-                await bot.send_message(
-                    user_id=user_id,
-                    text=private_message,
-                    parse_mode=parse_mode.ParseMode.MARKDOWN
-                )
-                logger.info(f"Отправлено уведомление о муте пользователю {user_id}")
-            except Exception as e:
-                logger.warning(f"Не удалось отправить личное сообщение пользователю {user_id}: {e}")
-            
-            # Отправляем уведомление в чат
-            try:
-                chat_notification = f"⚠️ Пользователь {user_name} получил мут на {mute_duration_str} за флуд."
-                notification_message = await bot.send_message(
-                    chat_id=chat_id,
-                    text=chat_notification
-                )
-                
-                # Получаем ID сообщения
-                notification_id = None
-                if hasattr(notification_message, 'message_id'):
-                    notification_id = notification_message.message_id
-                elif hasattr(notification_message, 'id'):
-                    notification_id = notification_message.id
-                elif isinstance(notification_message, dict):
-                    notification_id = notification_message.get('message_id') or notification_message.get('id')
-                
-                # Удаляем уведомление через 10 секунд
-                if notification_id:
-                    async def delete_notification():
-                        await asyncio.sleep(10)
-                        try:
-                            await bot.delete_message(
-                                chat_id=chat_id,
-                                message_id=notification_id
-                            )
-                        except Exception as e:
-                            logger.warning(f"Не удалось удалить уведомление: {e}")
-                    
-                    asyncio.create_task(delete_notification())
-            except Exception as e:
-                logger.warning(f"Не удалось отправить уведомление в чат: {e}")
-                
-    except Exception as e:
-        logger.error(f"Ошибка в anti_spam_handler: {e}")

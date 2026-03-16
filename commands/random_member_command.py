@@ -1,5 +1,5 @@
 from config import bot, dp
-from maxapi import F
+from maxapi import F, types
 from maxapi.types import MessageCreated
 from maxapi.enums import chat_type, parse_mode
 from utils.helpers import get_chat_info_safe, get_chat_members_from_event, get_chat_title_by_id
@@ -9,7 +9,7 @@ from maxapi.utils.inline_keyboard import InlineKeyboardBuilder
 from maxapi.types.attachments.buttons import CallbackButton
 from commands.user_subscribed import user_subscribed
 
-@dp.message_created(F.message.body.text == ("/random"))
+@dp.message_created(types.Command('random'))
 async def random_member_command(event: MessageCreated):
     if await user_subscribed(event) == False:
         return

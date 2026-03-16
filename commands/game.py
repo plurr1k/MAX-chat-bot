@@ -1,7 +1,7 @@
 import random
 from config import dp, bot
 from logger_config import logger
-from maxapi import F
+from maxapi import F, types
 from maxapi.types import MessageCreated
 from maxapi.enums import parse_mode
 import asyncio
@@ -261,7 +261,7 @@ def get_rating_stars(rating: float) -> str:
 
 # ========== ИГРОВЫЕ КОМАНДЫ ==========
 
-@dp.message_created(F.message.body.text == "/game")
+@dp.message_created(types.Command('game'))
 async def game_command(event: MessageCreated):
     if await user_subscribed(event) == False:
         return
@@ -276,8 +276,8 @@ async def game_command(event: MessageCreated):
         
         if user_id in active_games:
             await event.message.answer(
-                "⚠️ У вас уже есть активная игра!\n"
-                "Завершите текущую игру или подождите."
+                "⚠️ *❌{event.message.sender.full_name}*, у Вас уже есть активная игра!\n"
+                "Завершите текущую игру (/stopgame) или подождите."
             )
             return
         
@@ -312,7 +312,7 @@ async def game_command(event: MessageCreated):
         logger.error(f"Ошибка в /game: {e}")
         await event.message.answer(f"❌ Ошибка: {str(e)[:100]}")
 
-@dp.message_created(F.message.body.text == "/stopgame")
+@dp.message_created(types.Command('stopgame'))
 async def stop_game_command(event: MessageCreated):
     """Принудительное завершение игры"""
     try:
@@ -321,7 +321,7 @@ async def stop_game_command(event: MessageCreated):
         
         if user_id not in active_games:
             await event.message.answer(
-                "❌ У вас нет активной игры.\n"
+                "*❌{event.message.sender.full_name}*, у Вас нет активной игры.\n"
                 "Начните новую игру с помощью /game"
             )
             return
@@ -468,14 +468,14 @@ async def game_answer(event: MessageCreated):
 
         if user_id not in active_games:
             await bot.delete_message(message_id = event.message.body.mid)
-            await event.message.answer(f"❌ *{event.message.sender.full_name}*, у вас нет активной игры. Начните новую с помощью /game", parse_mode=parse_mode.ParseMode.MARKDOWN)
+            await event.message.answer(f"❌ *{event.message.sender.full_name}*, у Вас нет активной игры. Начните новую с помощью /game", parse_mode=parse_mode.ParseMode.MARKDOWN)
             return
         
         game = active_games[user_id]
         
         if game.stage not in ["playing", "super_game"]:
             await bot.delete_message(message_id = event.message.body.mid)
-            await event.message.answer(f"*❌{event.message.sender.full_name}*, Сейчас не время для ответов. Дождитесь вопроса.", parse_mode=parse_mode.ParseMode.MARKDOWN)
+            await event.message.answer(f"*❌{event.message.sender.full_name}*, сейчас не время для ответов. Дождитесь вопроса.\nДля остановки игры напшиите /stopgame", parse_mode=parse_mode.ParseMode.MARKDOWN)
             return
         await bot.delete_message(message_id = event.message.body.mid)
         if msg_bad_answer is not None:
@@ -495,7 +495,7 @@ async def game_answer(event: MessageCreated):
         
         if not parts:
             await event.message.answer(
-                "❌ Напишите ответ в формате: `/о <ваш ответ>` или `/o <ваш ответ>`\n"
+                "❌ *❌{event.message.sender.full_name}*, напишите ответ в формате: `/о <ваш ответ>` или `/o <ваш ответ>`\n"
                 f"Пример: `/о {game.get_current_question()['answers'][0]}`",
                 parse_mode=parse_mode.ParseMode.MARKDOWN
             )
@@ -652,7 +652,7 @@ async def game_answer(event: MessageCreated):
         logger.error(f"Ошибка в обработке ответа: {e}")
         await event.message.answer(f"❌ Ошибка: {str(e)[:100]}")
 
-@dp.message_created(F.message.body.text == "/stats")
+@dp.message_created(types.Command('stats'))
 async def game_stats_command(event: MessageCreated):
     if await user_subscribed(event) == False:
         return
@@ -693,7 +693,7 @@ async def game_stats_command(event: MessageCreated):
         logger.error(f"Ошибка в /stats: {e}")
         await event.message.answer(f"❌ Ошибка: {str(e)[:100]}")
 
-@dp.message_created(F.message.body.text == "/top")
+@dp.message_created(types.Command('top15'))
 async def game_top_command(event: MessageCreated):
     """Топ игроков по комплексному рейтингу"""
     try:
@@ -720,6 +720,62 @@ async def game_top_command(event: MessageCreated):
         top_players = sorted(players_with_rating, key=lambda x: x["rating"], reverse=True)[:15]
         
         response = "🏆 **ТОП-15 ИГРОКОВ** 🏆\n\n"
+        
+        # Добавляем топ игроков
+        for i, player in enumerate(top_players, 1):
+            # Определяем медаль для первых трех мест
+            if i == 1:
+                medal = "🥇"
+            elif i == 2:
+                medal = "🥈"
+            elif i == 3:
+                medal = "🥉"
+            else:
+                medal = f"{i}."
+            
+            response += (
+                f"{medal} **{player['name']}**\n"
+                f"{player['tier']}\n"
+                f"⚡ Рейтинг: {player['rating']}\n"
+                f"{player['stars']}\n\n"
+            )
+        await event.message.delete()
+        await bot.send_message(
+                user_id=event.message.sender.user_id,
+                text = response,
+                parse_mode=parse_mode.ParseMode.MARKDOWN)
+        
+    except Exception as e:
+        logger.error(f"Ошибка в /top: {e}")
+        await event.message.answer(f"❌ Ошибка: {str(e)[:100]}")
+
+@dp.message_created(types.Command('top'))
+async def game_top_command(event: MessageCreated):
+    """Топ игроков по комплексному рейтингу"""
+    try:
+        stats = gs.game_stats.scores
+        
+        if not stats:
+            await event.message.answer("📊 Пока нет статистики игр.")
+            return
+        
+        # Рассчитываем рейтинг для каждого игрока
+        players_with_rating = []
+        for user_id, user_data in stats.items():
+            if user_data.get("games"):  # Только игроки с хотя бы одной игрой
+                rating = calculate_player_rating(user_id, user_data)
+                detailed = get_detailed_player_stats(user_id, user_data)
+                players_with_rating.append({
+                    "name": user_data.get("name", "Неизвестный"),
+                    "rating": rating,
+                    "tier": get_rating_tier(rating),
+                    "stars": get_rating_stars(rating)
+                })
+        
+        # Сортируем по рейтингу (от большего к меньшему)
+        top_players = sorted(players_with_rating, key=lambda x: x["rating"], reverse=True)[:5]
+        
+        response = "🏆 **ТОП-5 ИГРОКОВ** 🏆\n\n"
         
         # Добавляем топ игроков
         for i, player in enumerate(top_players, 1):

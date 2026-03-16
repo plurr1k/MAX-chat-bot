@@ -1,13 +1,13 @@
 from config import bot, dp
 import config
 
-from maxapi import F
+from maxapi import F, types
 from maxapi.types import MessageCreated
 from maxapi.enums import chat_type, parse_mode
 from utils.helpers import get_chat_info_safe, get_chat_title_by_id
 from commands.get_all_bot_chats import get_all_bot_chats
 
-@dp.message_created(F.message.body.text.startswith("/setchat"))
+@dp.message_created(types.Command('setchat'))
 async def set_chat(event: MessageCreated):
 
     chat_id = event.message.recipient.chat_id

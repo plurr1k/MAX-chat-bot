@@ -1,13 +1,13 @@
 from config import bot, dp
 import config
-from maxapi import F
+from maxapi import F, types
 from maxapi.types import MessageCreated
 from maxapi.methods.get_chats import GetChats
 from maxapi.enums import parse_mode
 from utils.helpers import get_chat_info_safe
 from logger_config import logger
 
-@dp.message_created(F.message.body.text.startswith("/chats"))
+@dp.message_created(types.Command('chats'))
 async def get_all_bot_chats(event: MessageCreated, answer: bool = True):
     """Получить список всех чатов, в которых состоит бот (с пагинацией)"""
     try:

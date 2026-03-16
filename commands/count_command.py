@@ -1,5 +1,5 @@
 from config import bot, dp
-from maxapi import F
+from maxapi import F, types
 from maxapi.types import MessageCreated
 from maxapi.enums import chat_type, parse_mode
 from utils.helpers import get_chat_info_safe, get_chat_members_from_event, get_chat_title_by_id
@@ -8,7 +8,7 @@ from logger_config import logger
 from datetime import datetime
 from commands.user_subscribed import user_subscribed
 
-@dp.message_created(F.message.body.text.startswith("/count"))
+@dp.message_created(types.Command('count'))
 async def count_command(event: MessageCreated):
     """Показать количество участников чата и статистику"""
     if await user_subscribed(event) == False:

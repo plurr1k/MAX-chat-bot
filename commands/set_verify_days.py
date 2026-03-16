@@ -1,13 +1,13 @@
 from config import bot, dp
 import config
-from maxapi import F
+from maxapi import F, types
 from maxapi.types import MessageCreated
 from maxapi.enums import parse_mode
 from utils.helpers import get_chat_info_safe
 from logger_config import logger
 from datetime import datetime
 
-@dp.message_created(F.message.body.text.startswith("/setverify"))
+@dp.message_created(types.Command('setverify'))
 async def set_verify_days(event: MessageCreated):
     """Установить минимальное количество дней для доверенного пользователя"""
 

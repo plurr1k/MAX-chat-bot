@@ -1,5 +1,5 @@
 from config import bot, dp
-from maxapi import F
+from maxapi import F, types
 from maxapi.types import MessageCreated
 from maxapi.types.attachments.upload import AttachmentUpload, AttachmentPayload
 from maxapi.enums.upload_type import UploadType
@@ -8,7 +8,7 @@ from logger_config import logger
 import config
 from commands.user_subscribed import user_subscribed
 
-@dp.message_created(F.message.body.text.startswith("/окак"))
+@dp.message_created(types.Command('окак'))
 async def okak_command(event: MessageCreated):
     """Вывод картинки мема окак и удаление команды"""
     if await user_subscribed(event) == False:
