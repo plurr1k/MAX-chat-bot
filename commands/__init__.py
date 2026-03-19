@@ -16,3 +16,4 @@ from config import *
 from .botwifi import *
 from .game import *
 from .user_subscribed import *
+from .abitur_command import *

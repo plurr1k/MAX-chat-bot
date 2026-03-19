@@ -23,6 +23,7 @@ from commands import randomverify_command
 from commands import randomverify_callback_handler
 from commands import game
 from commands import user_subscribed
+from commands import abitur_command
 
 async def main():
     dp.middleware(AntiSpamMiddleware())
