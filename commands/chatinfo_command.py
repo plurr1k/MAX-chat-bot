@@ -1,3 +1,4 @@
+# by plurr1k
 from config import bot, dp
 from maxapi import F, types
 from maxapi.types import MessageCreated
@@ -92,5 +93,5 @@ async def chatinfo_command(event: MessageCreated):
     except Exception as e:
         logger.error(f"Ошибка в /chatinfo: {e}")
         await event.message.answer(f"❌ Ошибка: {str(e)[:100]}")
-
+# by plurr1k.
 

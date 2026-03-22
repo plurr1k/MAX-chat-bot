@@ -1,3 +1,4 @@
+# by plurr1k
 import random
 from config import dp, bot
 from logger_config import logger

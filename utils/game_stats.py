@@ -1,4 +1,5 @@
 # game_stats.py
+# by plurr1k
 import json
 import os
 from typing import Dict, List, Optional

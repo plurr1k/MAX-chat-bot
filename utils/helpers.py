@@ -1,3 +1,4 @@
+# by plurr1k
 from config import bot
 import config
 from logger_config import logger

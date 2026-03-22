@@ -1,3 +1,4 @@
+# by plurr1k
 from config import bot, dp
 from maxapi import F
 from maxapi.types import MessageCallback

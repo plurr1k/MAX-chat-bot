@@ -1,4 +1,6 @@
 
+# by plurr1k
+
 import logging
 
 logging.basicConfig(

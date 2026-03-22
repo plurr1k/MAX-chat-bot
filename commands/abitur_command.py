@@ -1,3 +1,4 @@
+# by plurr1k
 from maxapi.types import MessageCreated
 from maxapi import types
 from maxapi.enums import parse_mode
@@ -60,3 +61,4 @@ async def user_full_info_command(event: MessageCreated):
 
     except Exception as e:
         logger.error(f"Ошибка в /abitur: {e}")   
+# by plurr1k.

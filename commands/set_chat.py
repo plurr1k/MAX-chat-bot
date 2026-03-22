@@ -1,3 +1,4 @@
+# by plurr1k
 from config import bot, dp
 import config
 
@@ -57,9 +58,9 @@ async def set_chat(event: MessageCreated):
                 chat_info = await get_chat_info_safe(this_chat)
                 if chat_info["chat_id"] == int(parts[1]):
                     in_all_chats = True
-                    MAIN_CHAT_ID = int(parts[1])
+                    config.MAIN_CHAT_ID = int(parts[1])
                     await bot.send_message(user_id=event.message.sender.user_id,
-                        text= f"✅ Чат {await get_chat_title_by_id(MAIN_CHAT_ID)} установлен как основной\nID: `{MAIN_CHAT_ID}`",
+                        text= f"✅ Чат {await get_chat_title_by_id(config.MAIN_CHAT_ID)} установлен как основной\nID: `{config.MAIN_CHAT_ID}`",
                         parse_mode=parse_mode.ParseMode.MARKDOWN)
                     break
                 else:

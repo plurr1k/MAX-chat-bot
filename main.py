@@ -1,3 +1,4 @@
+# by plurr1k
 import asyncio
 from config import bot, dp
 from mute_middleware import AntiSpamMiddleware
