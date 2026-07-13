@@ -158,7 +158,7 @@ The project is organized into independent modules:
 
 This modular architecture makes the project easy to maintain and extend with new features.
 
-![Architecture](docs/architecture diagram.png)
+![Architecture](docs/architecture-diagram.png)
 
 ## Development
 
