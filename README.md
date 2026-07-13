@@ -57,11 +57,25 @@ MAX-chat-bot/
 ├── main.py                # Application entry point
 └── README.md
 ```
+## Tech Stack
+
+### Language
+- Python 3.10+
+
+### Platform & API
+- MAX Bot API (maxapi)
+
+### Architecture
+- Async programming
+- Middleware architecture
+- Modular command architecture
 
 ## Requirements
 
 * Python 3.10+
 * `maxapi` library
+* `paramiko` library
+* `pandas` library
 
 ## Installation
 
