@@ -2,6 +2,10 @@
 
 A multifunctional bot for the **MAX** platform that provides chat administration, moderation tools, user information commands, and interactive features.
 
+## Project Background
+
+This project was developed as part of an internship project for managing and moderating a school group chat.
+
 ## Features
 
 * 👋 `/start` command
@@ -150,4 +154,4 @@ To add a new command:
 
 ## 📄 License
 
-This project was developed for a school chat group as part of an internship.
+This project is licensed under the MIT License.
