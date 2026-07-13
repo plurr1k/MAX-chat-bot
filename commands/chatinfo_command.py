@@ -1,4 +1,5 @@
-# by plurr1k
+# Get chat info
+
 from config import bot, dp
 from maxapi import F, types
 from maxapi.types import MessageCreated

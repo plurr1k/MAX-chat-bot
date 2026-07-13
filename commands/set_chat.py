@@ -1,4 +1,5 @@
-# by plurr1k
+#  Set working chat
+
 from config import bot, dp
 import config
 
@@ -83,3 +84,4 @@ async def set_chat(event: MessageCreated):
             parse_mode=parse_mode.ParseMode.MARKDOWN)
         await event.message.delete()
 
+# by plurr1k

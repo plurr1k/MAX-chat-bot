@@ -1,4 +1,5 @@
-# by plurr1k
+# Info of all fucntions
+
 from config import dp
 from maxapi import F, types
 from maxapi.enums import parse_mode
@@ -47,5 +48,5 @@ async def help_command(event: MessageCreated):
     
     await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
 
-
+# by plurr1k
 

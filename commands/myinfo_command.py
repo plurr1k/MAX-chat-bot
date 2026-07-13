@@ -1,4 +1,5 @@
-# by plurr1k
+# Get info about your profile
+
 from config import bot, dp
 from maxapi import F, types
 from maxapi.types import MessageCreated
@@ -48,3 +49,4 @@ async def myinfo_command(event: MessageCreated):
         logger.error(f"Ошибка в /myinfo: {e}")
         await event.message.answer(f"❌ Ошибка: {str(e)[:100]}")
 
+# by plurr1k

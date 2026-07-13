@@ -1,4 +1,5 @@
-# by plurr1k
+# Start bot command
+
 from config import dp
 from maxapi import F, types
 from maxapi.types import MessageCreated
@@ -25,3 +26,4 @@ async def start_command(event: types.MessageCreated):
         await event.message.answer("❌ Ошибка при запуске")
 
 
+# by plurr1k

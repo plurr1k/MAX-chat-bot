@@ -1,4 +1,5 @@
-# by plurr1k
+# Send picture with meme
+
 from config import bot, dp
 from maxapi import F, types
 from maxapi.types import MessageCreated
@@ -51,3 +52,4 @@ async def okak_command(event: MessageCreated):
                 text=f"❌ Ошибка в команде /окак: {str(e)[:100]}"
             )
 
+# by plurr1k

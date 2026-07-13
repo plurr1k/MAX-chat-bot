@@ -1,4 +1,5 @@
-# by plurr1k
+# Get random member
+
 from config import bot, dp
 from maxapi import F, types
 from maxapi.types import MessageCreated
@@ -55,3 +56,4 @@ async def random_member_command(event: MessageCreated):
         await event.message.answer("⚠️ Ошибка при выборе участника. Попробуйте еще раз.")
 
 
+# by plurr1k

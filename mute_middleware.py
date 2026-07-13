@@ -1,4 +1,5 @@
-# by plurr1k
+# Middleware of mute users
+
 from maxapi.filters.middleware import BaseMiddleware
 from typing import Any, Awaitable, Callable, Dict
 from datetime import datetime
@@ -128,3 +129,5 @@ class AntiSpamMiddleware(BaseMiddleware):
             await bot.delete_message(chat_id=chat_id, message_id=message_id)
         except Exception:
             pass
+        
+# by plurr1k.

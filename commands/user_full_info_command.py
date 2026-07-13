@@ -1,4 +1,5 @@
-# by plurr1k
+# Full info about user
+
 from config import bot, dp
 import config
 from maxapi import F, types
@@ -108,5 +109,5 @@ async def user_full_info_command(event: MessageCreated):
         logger.error(f"Ошибка в /userinfo: {e}")
         await event.message.answer(f"❌ Ошибка: {str(e)[:100]}")
 
-
+# by plurr1k
 

@@ -1,4 +1,5 @@
-# by plurr1k
+# System of mute users
+
 from collections import defaultdict
 from datetime import datetime, timedelta
 from logger_config import logger
@@ -11,7 +12,7 @@ import config
 import json
 from maxapi import F
 
-# ========== КЛАСС ДЛЯ УПРАВЛЕНИЯ МУТАМИ ==========
+# КЛАСС ДЛЯ УПРАВЛЕНИЯ МУТАМИ 
 
 class MuteManager:
     def __init__(self):
@@ -180,3 +181,5 @@ async def cleanup_task():
         except Exception as e:
             logger.error(f"Ошибка в задаче очистки: {e}")
             await asyncio.sleep(60)
+
+# by plurr1k.

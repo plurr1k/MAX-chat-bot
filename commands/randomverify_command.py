@@ -1,4 +1,4 @@
-# by plurr1k
+# Random verified member
 from config import bot, dp
 import config
 from maxapi import F, types
@@ -123,3 +123,4 @@ async def randomverify_command(event: MessageCreated):
         await event.message.answer(f"💥 Критическая ошибка:\n`{str(e)[:300]}`")
         logger.error(f"CRITICAL /randomverify error: {e}")
 
+# by plurr1k

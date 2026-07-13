@@ -1,4 +1,5 @@
-# by plurr1k
+# All other functions
+
 from config import bot
 import config
 from logger_config import logger
@@ -169,3 +170,4 @@ async def check_user_trust(chat_id: int, user_id: int) -> dict:
         logger.error(f"Ошибка проверки доверенности: {e}")
         return {"trusted": False, "days": 0}
     
+# by plurr1k.

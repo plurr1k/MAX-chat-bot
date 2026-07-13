@@ -1,4 +1,5 @@
-# by plurr1k
+# Description school applicant
+
 from maxapi.types import MessageCreated
 from maxapi import types
 from maxapi.enums import parse_mode
@@ -16,6 +17,8 @@ async def user_full_info_command(event: MessageCreated):
     if await user_subscribed(event) == False:
         return
     try:
+        # Колонки в файле excel должны называться: Код,Фамилия,Имя,Отчество,Баллы,Статус
+        EXCEL_URL = 'jsons/<NAME>'
         chat_id = event.message.recipient.chat_id
         chat = await bot.get_chat_by_id(chat_id)
         chat_info = await get_chat_info_safe(chat)
@@ -44,7 +47,7 @@ async def user_full_info_command(event: MessageCreated):
 
         res = await event.message.answer("🔄  Ищу участника..")
 
-        df = pd.read_excel('jsons/Бот_Умные дети_2026.xlsx', engine='openpyxl')
+        df = pd.read_excel(EXCEL_URL, engine='openpyxl')
 
         result = df[df['Код'] == int(target_code)]
         print(result)

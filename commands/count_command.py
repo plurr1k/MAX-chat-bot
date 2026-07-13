@@ -1,4 +1,5 @@
-# by plurr1k
+# Get count peoples in chat and get stats
+
 from config import bot, dp
 from maxapi import F, types
 from maxapi.types import MessageCreated

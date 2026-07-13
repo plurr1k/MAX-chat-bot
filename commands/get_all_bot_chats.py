@@ -1,4 +1,5 @@
-# by plurr1k
+# Get all bot in chats
+
 from config import bot, dp
 import config
 from maxapi import F, types
@@ -51,3 +52,4 @@ async def get_all_bot_chats(event: MessageCreated, answer: bool = True):
     except Exception as e:
         logger.error(f"Ошибка в /chats: {e}")
 
+# by plurr1k

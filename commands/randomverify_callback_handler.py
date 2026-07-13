@@ -1,4 +1,5 @@
-# by plurr1k
+# Callback of random verified member
+
 from config import bot, dp
 import config
 from maxapi.types import MessageCallback
@@ -88,3 +89,4 @@ async def randomverify_callback_handler(event: MessageCallback):
         await event.message.edit(f"💥 Ошибка при выборе участников:\n`{str(e)[:300]}`")
         logger.error(f"CRITICAL /randomverify callback error: {e}")
     
+# by plurr1k

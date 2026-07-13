@@ -1,8 +1,10 @@
-# by plurr1k
+# Get allow of wifi
+
 import asyncio
 import logging
 import random
 import string
+import config
 from maxapi import Bot, Dispatcher, types
 import paramiko  # библиотека для SSH
 import time  # <-- ВАЖНО: добавлен импорт time
@@ -17,12 +19,12 @@ from commands.user_subscribed import user_subscribed
 logging.basicConfig(level=logging.INFO)
 
 # --- Конфигурация ---
-BOT_TOKEN = 'f9LHodD0cOIZP9VjTzHgvRMVvy1qJihAvFnSn9SxD7upxy2YNyH13lPVriMi5zxt27ZHPgptUR8zyZzHzTYP'
-MIKROTIK_IPS = ['192.168.1.46']  # IP ваших роутеров
-MIKROTIK_USER = 'admin'
-MIKROTIK_PASSWORD = 'school617'
+BOT_TOKEN = config.TOKEN # Токен бота
+MIKROTIK_IPS = []  # IP ваших роутеров
+MIKROTIK_USER = '' # Логин роутера
+MIKROTIK_PASSWORD = '' # Пароль роутера
 MIKROTIK_PORT = 22  # стандартный порт SSH
-USER_PROFILE = 'student'  # профиль из предыдущих шагов
+USER_PROFILE = 'student'  # профиль
 DATA_FILE = 'jsons/users_wifi_data.json'  # файл для хранения данных пользователей
 ACCESS_VALID_DAYS = 7  # срок действия доступа в днях
 # --------------------

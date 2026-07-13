@@ -1,4 +1,5 @@
-# by plurr1k
+# Popularity game
+
 import random
 from config import dp, bot
 from logger_config import logger
@@ -13,7 +14,7 @@ from typing import Dict, List, Tuple
 from commands.user_subscribed import user_subscribed, get_user_info_safe
 from datetime import datetime
 
-# ========== ЗАГРУЗКА ВОПРОСОВ ДЛЯ ИГРЫ ==========
+# ЗАГРУЗКА ВОПРОСОВ ДЛЯ ИГРЫ
 
 def load_questions():
     """Загрузка вопросов из файла"""

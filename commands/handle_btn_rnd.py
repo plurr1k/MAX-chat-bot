@@ -1,4 +1,5 @@
-# by plurr1k
+# Callback after click on buttons (random_member_command.py)
+
 from config import bot, dp
 from maxapi import F
 from maxapi.types import MessageCallback
@@ -65,5 +66,5 @@ async def handle_btn_rnd(event: MessageCallback):
         logger.error(f"Ошибка при обработке callback btn_rnd: {e}")
         await event.message.edit("⚠️ Ошибка при выборе участника. Попробуйте еще раз.", attachments=[])
 
-
+# by plurr1k
 

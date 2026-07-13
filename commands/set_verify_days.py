@@ -1,4 +1,5 @@
-# by plurr1k
+# Set days after join for verified member
+
 from config import bot, dp
 import config
 from maxapi import F, types
@@ -65,3 +66,4 @@ async def check_user_trust(chat_id: int, user_id: int) -> dict:
         logger.error(f"Ошибка проверки доверенности: {e}")
         return {"trusted": False, "days": 0}
 
+# by plurr1k

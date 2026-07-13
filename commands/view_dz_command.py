@@ -1,4 +1,5 @@
-# by plurr1k
+# Random phrases for motivation
+
 from config import dp
 from maxapi import F 
 from maxapi.types import MessageCreated
@@ -127,3 +128,5 @@ async def view_dz_command(event: MessageCreated):
     except Exception as e:
         logger.error(f"Ошибка в команде /view DZ: {e}")
         await event.message.answer(f"Ошибка: {str(e)[:100]}")
+
+# by plurr1k

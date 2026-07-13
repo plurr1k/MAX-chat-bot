@@ -1,4 +1,5 @@
-# by plurr1k
+# Get chat id
+
 from config import bot, dp
 from maxapi import F, types
 from maxapi.types import MessageCreated
@@ -18,3 +19,4 @@ async def getid_command(event: MessageCreated):
         response = "🆔 *ID этого чата:* Недостуно\n"
     await event.message.answer(response, parse_mode=parse_mode.ParseMode.MARKDOWN)
 
+# by plurr1k
